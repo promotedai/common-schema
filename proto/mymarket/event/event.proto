@@ -1,14 +1,14 @@
 syntax = "proto3";
-package example_event;
+package mymarket_event;
 
 option java_multiple_files = true;
-option java_package = "ai.promoted.proto.example.event";
-option java_outer_classname = "RexEventProto";
+option java_package = "ai.promoted.proto.mymarket.event";
+option java_outer_classname = "MymarketEventProto";
 
 import "proto/event/event.proto";
 
 
-// Our fake, example marketplace is called Rex.
+// Our fake, example marketplace is called Mymarket.
 
 
 // Next ID: 3
@@ -27,7 +27,7 @@ enum OptionalBoolean {
 
 // Marketplace-specific wrapper for User.
 // Next ID: 5
-message RexUser {
+message MymarketUser {
   event.User common = 1;
 
   // Add custom User fields here
@@ -37,7 +37,7 @@ message RexUser {
 
 // Marketplace-specific wrapper for SessionProfile (mutable sensitive info).
 // Next ID: 2
-message RexSessionProfile {
+message MymarketSessionProfile {
   event.SessionProfile common = 1;
 
   // Add custom SessionProfile fields here.
@@ -45,7 +45,7 @@ message RexSessionProfile {
 
 // Marketplace-specific wrapper for Session.
 // Next ID: 2
-message RexSession {
+message MymarketSession {
   event.Session common = 1;
 
   // Add custom Session fields here.
@@ -53,7 +53,7 @@ message RexSession {
 
 // Marketplace-specific wrapper for (page) View.  E.g. Feed, Search Results, Etc.
 // Next ID: 2
-message RexView {
+message MymarketView {
   event.View common = 1;
   // Add custom View fields here.
 }
@@ -61,7 +61,7 @@ message RexView {
 // Marketplace-specific wrapper for Request.
 // A request for Insertions. A View can issue multiple Requests.
 // Next ID: 2
-message RexRequest {
+message MymarketRequest {
   event.Request common = 1;
   // Add custom Request fields here.
 }
@@ -79,20 +79,20 @@ message Product {
 
 // Marketplace-specific wrapper for Insertion (result items that might not get seen).
 // Next ID: 3
-message RexInsertion {
+message MymarketInsertion {
   event.Insertion common = 1;
   // Add custom Insertion fields here.
   Product product = 2;
 }
 
 // Marketplace-specific wrapper for Impression
-message RexImpression {
+message MymarketImpression {
   event.Impression common = 1;
   // Add custom Impression fields here.
 }
 
 // Marketplace-specific wrapper for clicks
-message RexClick {
+message MymarketClick {
   event.Click common = 1;
   // Add custom Click fields here.
 }
@@ -100,7 +100,7 @@ message RexClick {
 // A way to batch up log requests into the same request.
 // Clients can reference logs in different batches.
 // Please sync with Promoted before modifying.
-message RexBatchLogRequest {
+message MymarketBatchLogRequest {
 
   // Required.
   uint64 platform_id = 1;
@@ -115,12 +115,12 @@ message RexBatchLogRequest {
   // Client timestamp when event was created.
   uint64 client_log_timestamp = 4;
 
-  repeated RexUser user = 10;
-  repeated RexSessionProfile session_profile = 12;
-  repeated RexSession session = 13;
-  repeated RexView view = 14;
-  repeated RexRequest request = 15;
-  repeated RexInsertion insertion = 16;
-  repeated RexImpression impression = 17;
-  repeated RexClick click = 18;
+  repeated MymarketUser user = 10;
+  repeated MymarketSessionProfile session_profile = 12;
+  repeated MymarketSession session = 13;
+  repeated MymarketView view = 14;
+  repeated MymarketRequest request = 15;
+  repeated MymarketInsertion insertion = 16;
+  repeated MymarketImpression impression = 17;
+  repeated MymarketClick click = 18;
 }
