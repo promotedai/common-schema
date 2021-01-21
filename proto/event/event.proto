@@ -1,0 +1,404 @@
+syntax = "proto3";
+package event;
+
+option java_multiple_files = true;
+option java_package = "ai.promoted.proto.event";
+option java_outer_classname = "EventProto";
+
+
+// -------- Event API ----------------------------------------
+
+// Important: Fields 1-9 are common fields that we want to be similar across
+// different log records.
+
+// Used to store user properties.  E.g. purchasedContentIds.
+// Clients can update each User multiple times by logging the User with the same
+// user_id.  Unset fields will not be updated. Repeated fields will act like a
+// merge if the item has a key.  Otherwise, it'll act like an append.
+// Next ID = 6.
+message User {
+
+  // Required.  Can be optional if set on a wrapping BatchLogRequest.
+  uint64 platform_id = 1;
+
+  // Required.  Can be optional if set on a wrapping BatchLogRequest.
+  string user_id = 2;
+
+  // Optional.  Can be optional if set on a wrapping BatchLogRequest.
+  string log_user_id = 3;
+
+  // TODO - optional?
+  // Required.  Client timestamp when event was created.
+  uint64 client_log_timestamp = 4;
+
+  // Clients should not set this.  This gets set in the Event API.
+  uint64 event_api_timestamp = 5;
+
+  // TODO - fill in when needed.
+}
+
+// Next ID = 4.
+enum DeviceType {
+  UNKNOWN_DEVICE_TYPE = 0;
+  DESKTOP = 1;
+  MOBILE = 2;
+  TABLET = 3;
+}
+
+// A sub-message containing Device info.
+// Next ID = 12.
+message Device {
+
+  DeviceType device_type = 1;
+
+  // android.os.Build.BRAND
+  string brand = 3;
+
+  // android.os.Build.DEVICE
+  string device_name = 5;
+
+  // android.os.Build.DISPLAY
+  string display = 7;
+
+  // android.os.Build.MODEL
+  string model = 9;
+
+  uint32 resolution_width = 10;
+  uint32 resolution_height = 11;
+}
+
+// A sub-message containing Browser info.
+// Next ID = 4.
+message Browser {
+
+  string user_agent = 1;
+
+  uint32 viewport_width = 2;
+  uint32 viewport_height = 3;
+}
+
+// Profile (contains pii) version of Session.
+// Next ID = 14.
+message SessionProfile {
+
+  // Required.  Can be optional if set on a wrapping BatchLogRequest.
+  uint64 platform_id = 1;
+
+  // Required.  Can be optional if set on a wrapping BatchLogRequest.
+  string user_id = 2;
+
+  // Skipping log_user_id = 3.  This is not currently useful.
+
+  // Required.  Can be optional if set on a wrapping BatchLogRequest.
+  // Client timestamp when event was created.
+  uint64 client_log_timestamp = 4;
+
+  // Clients should not set this.  This gets set in the Event API.
+  uint64 event_api_timestamp = 5;
+
+  // Required. This is the primary ID.
+  string session_id = 11;
+
+  // Geo.
+  // Optional.  We'll use IP Address to guess the user's location.
+  oneof ip_address {
+      fixed32 ip_address_v4 = 15;
+      bytes ip_address_v6 = 16;
+  }
+  // Optional.  Clients can specify latitude and longitude directly.
+
+  // [-90, 90]
+  double latitude = 17;
+
+  // [-180, 180]
+  double longitude = 18;
+}
+
+// A period of activity by a single User.  Users can have multiple Sessions.
+// Clients can update a Session multiple times by logging multiple Sessions with
+// the same session_id.  Unset fields will not be updated.  Repeated fields will
+// act like a merge if the item has a key.  Otherwise, it'll act like an append.
+// Next ID = 22.
+message Session {
+
+  // Required.  Can be optional if set on a wrapping BatchLogRequest.
+  uint64 platform_id = 1;
+
+  // Skip user_id = 2.  We do not log user_id on transaction logs.
+
+  // Required.  Can be optional if set on a wrapping BatchLogRequest.
+  string log_user_id = 3;
+
+  // Required.  Can be optional if set on a wrapping BatchLogRequest.
+  // Client timestamp when event was created.
+  uint64 client_log_timestamp = 4;
+
+  // Clients should not set this.  This gets set in the Event API.
+  uint64 event_api_timestamp = 5;
+
+  // Required. This is the primary ID.
+  string session_id = 11;
+
+  // Optional. Start time. If not set, we'll infer this from the API calls.
+  uint64 start_epoch_millis = 13;
+
+  // Optional. End time. If not set, we'll infer this from the API calls.
+  uint64 exclusive_end_epoch_millis = 14;
+
+  // ClientType client_type = 22;
+  // enum ClientType {
+  //   UNKNOWN = 0;
+  //   IOS = 1;
+  //   ANDROID = 2;
+  //   WEB = 3;
+  // }
+
+  // Optional.
+  // Device device = 15;
+
+  // Optional.
+  // Browser browser = 16;
+
+  // Optional.  Can be a full referrer string.  Could be just the UTM.
+  // string referrer = 21;
+}
+
+// Next ID = 11.
+enum UseCase {
+  UNKNOWN = 0;
+  CUSTOM = 1; // Need to handle in wrapper proto.
+  SEARCH = 2;
+  SEARCH_SUGGESTIONS = 3;
+  FEED = 4;
+  RELATED_CONTENT = 5;
+  CLOSE_UP = 6;
+  CATEGORY_CONTENT = 7;
+  MY_CONTENT = 8;
+  MY_SAVED_CONTENT = 9;
+  SELLER_CONTENT = 10;
+}
+
+// A view of a single page (e.g. feed, search results, etc).
+// Next ID = 37.
+message View {
+
+  // Required.  Can be optional if set on a wrapping BatchLogRequest.
+  uint64 platform_id = 1;
+
+  // Skip user_id = 2.  We do not log user_id on transaction logs.
+
+  // Required.  Can be optional if set on a wrapping BatchLogRequest.
+  string log_user_id = 3;
+
+  // Required.  Can be optional if set on a wrapping BatchLogRequest.
+  // Client timestamp when event was created.
+  uint64 client_log_timestamp = 4;
+
+  // Clients should not set this.  This gets set in the Event API.
+  uint64 event_api_timestamp = 5;
+
+  // Required.  This is a UUID that is generated by the client.
+  string view_id = 11;
+
+  // Optional.
+  string session_id = 12;
+
+  // Optional.  The name of the view.
+  string name = 13;
+
+  // Optional.  This is the url for the page.
+  // Q - how should this work with experiments?  Should we handle experiments separately?
+  string url = 14;
+
+  // Optional.
+  UseCase use_case = 15;
+
+  // Optional.
+  string search_query = 16;
+
+  PlatformType platform_type = 30;
+  // Next ID = 4.
+  enum PlatformType {
+    UNKNOWN = 0;
+    WEB = 1;
+    MOBILE_OR_TABLET = 2;
+    DESKTOP = 3;
+  }
+
+  // Optional.  Can be a full referrer string.  Could be just the UTM.
+  string referrer = 32;
+
+  // Optional.
+  Device device = 33;
+
+  // Optional.
+  Browser browser = 34;
+
+  uint32 document_width = 35;
+  uint32 document_height = 36;
+}
+
+// A request for Insertions. A View can issue multiple Requests.
+// Next ID = 16.
+message Request {
+
+  // Required.  Can be optional if set on a wrapping BatchLogRequest.
+  uint64 platform_id = 1;
+
+  // Skip user_id = 2.  We do not log user_id on transaction logs.
+
+  // Required.  Can be optional if set on a wrapping BatchLogRequest.
+  string log_user_id = 3;
+
+  // Required.  Can be optional if set on a wrapping BatchLogRequest.
+  // Client timestamp when event was created.
+  uint64 client_log_timestamp = 4;
+
+  // Clients should not set this.  This gets set in the Event API.
+  uint64 event_api_timestamp = 5;
+
+  // Required.  This is a UUID that is generated by the client.
+  string request_id = 11;
+
+  // Required.
+  string view_id = 12;
+
+  // Optional.
+  string session_id = 15;
+
+  // Optional.
+  UseCase use_case = 13;
+
+  // Optional.
+  string search_query = 14;
+}
+
+// This Event represents a Content being served at a certain position regardless
+// of it was views by a user. Insertions are immutable.
+// Next ID = 32.
+message Insertion {
+
+  // Required.  Can be optional if set on a wrapping BatchLogRequest.
+  uint64 platform_id = 1;
+
+  // Skip user_id = 2.  We do not log user_id on transaction logs.
+
+  // Required.  Can be optional if set on a wrapping BatchLogRequest.
+  string log_user_id = 3;
+
+  // Required.  Can be optional if set on a wrapping BatchLogRequest.
+  // Client timestamp when event was created.
+  uint64 client_log_timestamp = 4;
+
+  // Clients should not set this.  This gets set in the Event API.
+  uint64 event_api_timestamp = 5;
+
+  // Required.  This is a UUID that is generated by the client.
+  string insertion_id = 11;
+
+  // Optional.
+  string request_id = 12;
+
+  // Optional.
+  string session_id = 16;
+
+  // Optional.
+  string view_id = 17;
+
+  // Optional.  We'll look this up using the external_content_id.
+  string content_id = 13;
+
+  // Optional.  If using Promotion's CMS.
+  uint64 promotedai_content_id = 14;
+
+  // Optional.  0-based.
+  uint64 position = 15;
+
+  // 30 is saved for an internal field.
+
+  // If we use AWS Personalize.
+  string aws_personalize_recommendation_id = 31;
+}
+
+// When an Insertion is shown to a user.
+// Impressions are immutable.
+// Next ID = 16.
+message Impression {
+
+  // Required.  Can be optional if set on a wrapping BatchLogRequest.
+  uint64 platform_id = 1;
+
+  // Skip user_id = 2.  We do not log user_id on transaction logs.
+
+  // Required.  Can be optional if set on a wrapping BatchLogRequest.
+  string log_user_id = 3;
+
+  // Required.  Can be optional if set on a wrapping BatchLogRequest.
+  // Client timestamp when event was created.
+  uint64 client_log_timestamp = 4;
+
+  // Clients should not set this.  This gets set in the Event API.
+  uint64 event_api_timestamp = 5;
+
+  // Required.  This is a UUID that is generated by the client.
+  string impression_id = 11;
+
+  // Optional.
+  string insertion_id = 12;
+
+  // Optional.
+  string request_id = 13;
+
+  // Optional.
+  string session_id = 14;
+
+  // Optional.
+  string view_id = 15;
+}
+
+// Clicks are immutable.
+// Next ID = 23.
+message Click {
+
+  // Required.  Can be optional if set on a wrapping BatchLogRequest.
+  uint64 platform_id = 1;
+
+  // Required.  Can be optional if set on a wrapping BatchLogRequest.
+  string log_user_id = 3;
+
+  // Required.  Can be optional if set on a wrapping BatchLogRequest.
+  // Client timestamp when event was created.
+  uint64 client_log_timestamp = 4;
+
+  // Clients should not set this.  This gets set in the Event API.
+  uint64 event_api_timestamp = 5;
+
+  // Required.  This is a UUID for the click.
+  string click_id = 10;
+
+  // Optional.
+  string impression_id = 11;
+
+  // Optional.
+  string insertion_id = 12;
+
+  // Optional.
+  string request_id = 13;
+
+  // Optional.
+  string session_id = 14;
+
+  // Optional.
+  string view_id = 15;
+
+  // Optional.  Name of the click.  E.g. "FILTER_UPDATED" or  "CLOSEUP".
+  // Do not stick parameters in this name.
+  string name = 20;
+
+  // Optional.  The next URL.
+  string target_url = 21;
+
+  // Optional.  The clicked element ID.
+  string element_id = 22;
+
+}

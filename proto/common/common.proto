@@ -1,0 +1,39 @@
+syntax = "proto3";
+package common;
+
+option java_multiple_files = true;
+option java_package = "ai.promoted.proto.common";
+option java_outer_classname = "CommonProto";
+
+message EntityPath {
+  uint64 platform_id = 1;
+  uint64 customer_id = 2;
+  uint64 account_id = 4;
+  uint64 campaign_id = 5;
+  uint64 promotion_id = 6;
+  uint64 content_id = 3;
+}
+
+enum CurrencyCode {
+  UNKNOWN_CURRENCY_CODE = 0;
+  USD = 1;
+  EUR = 2;
+  JPY = 3;
+  GBP = 4;
+  AUD = 5;
+  CAD = 6;
+  CHF = 7;
+  CNY = 8;
+  HKD = 9;
+  NZD = 10;
+  SEK = 11;
+  KRW = 12;
+  SGD = 13;
+  NOK = 14;
+  MXN = 15;
+  INR = 16;
+  RUB = 17;
+  ZAR = 18;
+  TRY = 19;
+  BRL = 20;
+}
