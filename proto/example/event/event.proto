@@ -1,0 +1,126 @@
+syntax = "proto3";
+package example_event;
+
+option java_multiple_files = true;
+option java_package = "ai.promoted.proto.example.event";
+option java_outer_classname = "RexEventProto";
+
+import "proto/event/event.proto";
+
+
+// Our fake, example marketplace is called Rex.
+
+
+// Next ID: 3
+enum UserType {
+  UNKNOWN_USER_TYPE = 0;
+  BUYER = 1;
+  SELLER = 2;
+}
+
+// Next ID: 3
+enum OptionalBoolean {
+  UNKNOWN_BOOLEAN = 0;
+  FALSE = 1;
+  TRUE = 2;
+}
+
+// Marketplace-specific wrapper for User.
+// Next ID: 5
+message RexUser {
+  event.User common = 1;
+
+  // Add custom User fields here
+  UserType user_type = 2;
+  OptionalBoolean completed_transaction = 3;
+}
+
+// Marketplace-specific wrapper for SessionProfile (mutable sensitive info).
+// Next ID: 2
+message RexSessionProfile {
+  event.SessionProfile common = 1;
+
+  // Add custom SessionProfile fields here.
+}
+
+// Marketplace-specific wrapper for Session.
+// Next ID: 2
+message RexSession {
+  event.Session common = 1;
+
+  // Add custom Session fields here.
+}
+
+// Marketplace-specific wrapper for (page) View.  E.g. Feed, Search Results, Etc.
+// Next ID: 2
+message RexView {
+  event.View common = 1;
+  // Add custom View fields here.
+}
+
+// Marketplace-specific wrapper for Request.
+// A request for Insertions. A View can issue multiple Requests.
+// Next ID: 2
+message RexRequest {
+  event.Request common = 1;
+  // Add custom Request fields here.
+}
+
+// Next ID: 4
+
+// When a Student is in the list of results.
+// ID is on event.Insertion.content_id.
+// Next ID: 4
+message Product {
+  double price = 1;
+  double rating = 2;
+  double review_count = 3;
+}
+
+// Marketplace-specific wrapper for Insertion (result items that might not get seen).
+// Next ID: 3
+message RexInsertion {
+  event.Insertion common = 1;
+  // Add custom Insertion fields here.
+  Product product = 2;
+}
+
+// Marketplace-specific wrapper for Impression
+message RexImpression {
+  event.Impression common = 1;
+  // Add custom Impression fields here.
+}
+
+// Marketplace-specific wrapper for clicks
+message RexClick {
+  event.Click common = 1;
+  // Add custom Click fields here.
+}
+
+// A way to batch up log requests into the same request.
+// Clients can reference logs in different batches.
+// Please sync with Promoted before modifying.
+message RexBatchLogRequest {
+
+  // Required.
+  uint64 platform_id = 1;
+
+  // Required.
+  string user_id = 2;
+
+  // Required.
+  string log_user_id = 3;
+
+  // Optional.  Used as a default for each log record.
+  // Client timestamp when event was created.
+  uint64 client_log_timestamp = 4;
+
+  repeated RexUser user = 10;
+  repeated RexSessionProfile session_profile = 12;
+  repeated RexSession session = 13;
+  repeated RexView view = 14;
+  repeated RexRequest request = 15;
+  repeated RexInsertion insertion = 16;
+  repeated RexImpression impression = 17;
+  repeated RexClick click = 18;
+}
