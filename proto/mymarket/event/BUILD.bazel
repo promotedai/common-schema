@@ -14,7 +14,7 @@ proto_library(
 
 go_proto_library(
     name = "event_go_proto",
-    importpath = "github.com/promotedai/common-schema/proto/pangea/event",
+    importpath = "github.com/promotedai/common-schema/proto/mymarket/event",
     proto = ":event_proto",
     visibility = ["//visibility:public"],
     deps = [
@@ -25,7 +25,7 @@ go_proto_library(
 go_library(
     name = "go_default_library",
     embed = [":event_go_proto"],
-    importpath = "github.com/promotedai/common-schema/proto/pangea/event",
+    importpath = "github.com/promotedai/common-schema/proto/mymarket/event",
     visibility = ["//visibility:public"],
 )
 
