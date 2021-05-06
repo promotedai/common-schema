@@ -1,0 +1,15 @@
+syntax = "proto3";
+package mymarket_event;
+
+option java_multiple_files = true;
+option java_package = "ai.promoted.proto.mymarket.event";
+option java_outer_classname = "MymarketEventProto";
+
+// Our fake, example marketplace is called Mymarket.
+// Example: when we want to use binary serialization for content messages
+
+message MymarketInsertion {
+  // Content fields
+}
+
+
