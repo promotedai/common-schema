@@ -5,6 +5,8 @@ option java_multiple_files = true;
 option java_package = "ai.promoted.proto.common";
 option java_outer_classname = "CommonProto";
 
+import "google/protobuf/struct.proto";
+
 message EntityPath {
   uint64 platform_id = 1;
   uint64 customer_id = 2;
@@ -36,4 +38,65 @@ enum CurrencyCode {
   ZAR = 18;
   TRY = 19;
   BRL = 20;
+}
+
+// Common submessage that scopes helps scope a request/log to a user.
+//
+// Next ID = 3.
+message UserInfo {
+
+  // Optional.  The Platform's actual user ID.
+  // This field will be cleared from our transaction logs.
+  string user_id = 1;
+
+  // Optional.  This is a user UUID that is different from user_id and
+  // can quickly be disassociated from the actual user ID.  This is useful:
+  // 1. in case the user wants to be forgotten.
+  // 2. logging unauthenticated users.
+  // The user UUID is in a different ID space than user_id.
+  string log_user_id = 2;
+
+  // TODO - client IP address.
+  // Optional.  We'll use IP Address to guess the user's location.
+  // oneof ip_address {
+  //   fixed32 ip_address_v4 = 3;
+  //   bytes ip_address_v6 = 4;
+  // }
+
+  // TODO - user agent string.  This is used as a hint with IP address.
+
+  // TODO - privacy settings.  E.g. do not track.
+  // This might make sense on Header or on User directly.  Unclear.
+}
+
+// A message containing timing information.
+//
+// We can add common timing info to this message.  Down the road, we might
+// make more specific Timing messages (e.g. MetricsTiming).  We can reuse
+// the field numbers.
+//
+// Next ID = 3.
+message Timing {
+
+  // Optional.  Client timestamp when event was created.
+  uint64 client_log_timestamp = 1;
+
+  // Read-only.  This is set in the Event API.
+  uint64 event_api_timestamp = 2;
+}
+
+// Supports custom properties per platform.
+// Next ID = 3.
+message Properties {
+  oneof struct_field {
+    // Optional.  Contains protobuf serialized bytes.
+    bytes struct_bytes = 1;
+
+    // Optional.  Can be converted to/from JSON.
+    google.protobuf.Struct struct = 2;
+  }
+
+  // TODO - version ID.
+
+  // TODO - unknown fields.
 }

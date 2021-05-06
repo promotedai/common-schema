@@ -5,11 +5,9 @@ load("@rules_java//java:defs.bzl", "java_proto_library")
 
 proto_library(
     name = "event_proto",
-    srcs = ["event.proto"],
+    srcs = ["mymarket_event.proto"],
     visibility = ["//visibility:public"],
-    deps = [
-      "//proto/event:event_proto"
-    ],
+    deps = [],
 )
 
 go_proto_library(
@@ -17,9 +15,7 @@ go_proto_library(
     importpath = "github.com/promotedai/common-schema/proto/mymarket/event",
     proto = ":event_proto",
     visibility = ["//visibility:public"],
-    deps = [
-      "//proto/event:go_default_library"
-    ],
+    deps = [],
 )
 
 go_library(
@@ -33,7 +29,6 @@ java_proto_library(
     name = "event_java_proto",
     deps = [
         ":event_proto",
-        "//proto/event:event_proto"
     ],
     visibility = ["//visibility:public"],
 )
